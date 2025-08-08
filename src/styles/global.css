@@ -33,6 +33,7 @@ button {
   font-family: 'AnotherDanger';
   src: url('/assets/Clowns.ttf') format('truetype');
   font-weight: normal;
+  font-display: swap;
   font-style: normal;
 }
 
