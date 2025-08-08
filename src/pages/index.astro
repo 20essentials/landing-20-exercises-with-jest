@@ -1,0 +1,12 @@
+---
+import { Background } from '@/components/Background';
+import Hero from '@/components/Hero.astro';
+import HeroText from '@/components/HeroText.astro';
+import Layout from '@/layouts/Layout.astro';
+---
+
+<Layout>
+  <Background client:load />
+  <HeroText />
+  <Hero />
+</Layout>

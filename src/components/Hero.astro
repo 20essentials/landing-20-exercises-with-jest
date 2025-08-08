@@ -1,0 +1,147 @@
+---
+const arrayOfSrcJest = Array.from({ length: 25 }, (_, i) => {
+  if (i === 24) return 'https://github.com/20essentials/20-exercises-with-jest/';
+  return `https://github.com/20essentials/20-exercises-with-jest/tree/main/${i.toString().padStart(2, '0')}`;
+});
+---
+
+<section class='container-grid'>
+  <ul class='grid'>
+    {
+      arrayOfSrcJest.map((src, i) => {
+        const num = i + 1;
+        return (
+          <a
+            href={src}
+            class={`pic pic--${num}`}
+            style={`--grid-area: pic${num}`}
+            data-num={num}
+          />
+        );
+      })
+    }
+  </ul>
+
+  <div class='view'>
+    <div class='view__container'>
+      <div class='view__img-wrapper'>
+        <img src='' alt='' class='img' />
+      </div>
+      <div class='arrows'>
+        <button type='button' class='arrow arrow--prev'></button>
+        <button type='button' class='arrow arrow--next'></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .container-grid {
+    height: 100vh;
+    display: flex;
+    flex-wrap: wrap;
+    place-content: center;
+  }
+</style>
+
+<script>
+  const items: NodeListOf<HTMLElement> = document.querySelectorAll('.pic');
+  const view = document.querySelector('.view') as HTMLElement;
+  const viewImg = view.querySelector('img') as HTMLImageElement;
+  const arrPrev = document.querySelector('.arrow--prev') as HTMLElement;
+  const arrNext = document.querySelector('.arrow--next') as HTMLElement;
+  const showSlider = false;
+
+  const imgUrls: string[] = [];
+
+  interface Position {
+    current: number;
+    max: number;
+  }
+
+  const position: Position = {
+    current: 0,
+    max: 0
+  };
+
+  // Inicializar dataset
+  view.dataset.state = 'closed';
+  view.dataset.isVertical = '1';
+
+  // Cargar imágenes y asociar eventos
+  items.forEach((item, i) => {
+    item.dataset.position = i.toString();
+
+    const img = item.querySelector('img') as HTMLImageElement | null;
+    const imgUrl: string = img
+      ? img.src
+      : extractBackgroundUrl(getComputedStyle(item).backgroundImage);
+
+    imgUrls.push(imgUrl);
+    item.addEventListener('click', showView);
+  });
+
+  position.max = imgUrls.length - 1;
+
+  view.addEventListener('click', hideView);
+  arrPrev.addEventListener('click', (e: MouseEvent) => {
+    e.stopPropagation();
+    showPrev();
+  });
+
+  arrNext.addEventListener('click', (e: MouseEvent) => {
+    e.stopPropagation();
+    showNext();
+  });
+
+  function showView(this: HTMLElement): void {
+    if (!showSlider) return;
+    position.current = parseInt(this.dataset.position || '0', 10);
+    view.dataset.state = 'open';
+    changeImage();
+  }
+
+  function hideView(): void {
+    view.dataset.state = 'closed';
+    viewImg.src = '';
+  }
+
+  function changeImage(): void {
+    viewImg.src = imgUrls[position.current];
+
+    viewImg.onload = () => {
+      view.dataset.isVertical =
+        viewImg.naturalWidth > viewImg.naturalHeight ? '0' : '1';
+    };
+  }
+
+  function showPrev(): void {
+    position.current = (position.current - 1 + imgUrls.length) % imgUrls.length;
+    changeImage();
+  }
+
+  function showNext(): void {
+    position.current = (position.current + 1) % imgUrls.length;
+    changeImage();
+  }
+
+  function extractBackgroundUrl(backgroundImage: string): string {
+    const match = backgroundImage.match(/^url\(["']?(.*?)["']?\)$/);
+    return match ? match[1] : '';
+  }
+
+  window.addEventListener('keyup', (e: KeyboardEvent) => {
+    if (view.dataset.state !== 'open') return;
+
+    switch (e.key) {
+      case 'ArrowLeft':
+        showPrev();
+        break;
+      case 'ArrowRight':
+      case ' ':
+        e.preventDefault();
+        showNext();
+        break;
+    }
+  });
+</script>
