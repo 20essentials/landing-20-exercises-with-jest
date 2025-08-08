@@ -31,7 +31,7 @@ button {
 
 @font-face {
   font-family: 'AnotherDanger';
-  src: url('./assets/Clowns.ttf') format('truetype');
+  src: url('/assets/Clowns.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
